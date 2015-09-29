@@ -6,6 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import javax.swing.JButton;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.border.TitledBorder;
+import javax.swing.JList;
+import java.awt.Color;
 
 public class BDTWindow extends JFrame implements ActionListener {
 
@@ -14,12 +21,37 @@ public class BDTWindow extends JFrame implements ActionListener {
 	private int screenWidth, screenHeight;
 	private Timer swivelTimer;
 	private int duration;
+	private JButton hideButton;
+	private JPanel detailPanel;
+	private JButton expandButton;
+	private JPanel devicePanel;
 	
 	public static void main(String[] args) {
 		new BDTWindow();
 	}
 	
 	public BDTWindow() {
+		getContentPane().setLayout(null);
+		
+		hideButton = new JButton("Hide\r\n");
+		hideButton.setBackground(Color.WHITE);
+		hideButton.setBounds(278, 234, 96, 36);
+		getContentPane().add(hideButton);
+		
+		detailPanel = new JPanel();
+		detailPanel.setBackground(Color.WHITE);
+		detailPanel.setBounds(10, 56, 364, 167);
+		getContentPane().add(detailPanel);
+		
+		expandButton = new JButton("Expand");
+		expandButton.setBackground(Color.WHITE);
+		expandButton.setBounds(278, 11, 96, 36);
+		getContentPane().add(expandButton);
+		
+		devicePanel = new JPanel();
+		devicePanel.setBackground(Color.WHITE);
+		devicePanel.setBounds(10, 234, 258, 36);
+		getContentPane().add(devicePanel);
 		SetSystemSettings();
 		draw();
 		move();
@@ -55,6 +87,4 @@ public class BDTWindow extends JFrame implements ActionListener {
 			}
 		}
 	}
-	
-	
 }
