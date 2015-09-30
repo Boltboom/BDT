@@ -27,15 +27,24 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 
-
+/**
+ * This file contains the early work of the Bluetooth Diagnostic utility.
+ * Currently, the only function available is finding available bluetooth devices.
+ * Classes: BDTWindow - Main program and GUI, MyDiscoveryListener - Listener class to check for valid devices.
+ * @author Robert
+ *
+ */
 public class BDTWindow extends JFrame implements ActionListener {
 
+	/*
+	 * Fields and Variables
+	 */
 	private Dimension screenSize;
 	private String os;
 	private int screenWidth, screenHeight;
 	private Timer swivelTimer;
 	private Timer clock;
-	private int duration; // In 1/10 seconds
+	private int duration;
 	private JButton hideButton;
 	private JPanel detailPanel;
 	private JButton expandButton;
@@ -48,10 +57,17 @@ public class BDTWindow extends JFrame implements ActionListener {
 	protected RemoteDevice mainDevice;
 	private JLabel deviceLabel;
 	private JLabel AssignLabel;
+	
+	/*
+	 * Main function, starts new BDTWindow.
+	 */
 	public static void main(String[] args) {
 		new BDTWindow();
 	}
 	
+	/*
+	 * BDTWindow constructor. Follows 5 steps before continuous automation.
+	 */
 	public BDTWindow() {
 		SetSystemSettings();
 		draw();
@@ -60,6 +76,9 @@ public class BDTWindow extends JFrame implements ActionListener {
 		clock();
 	}
 	
+	/*
+	 * Function finds all relevant system information for the utility. More information will be pinged later.
+	 */
 	public void SetSystemSettings() {
 		getContentPane().setLayout(null);
 		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -67,6 +86,9 @@ public class BDTWindow extends JFrame implements ActionListener {
 		screenHeight = screenSize.height;
 	}
 	
+	/*
+	 * Function detects all available bluetooth devices and adds them to the GUI.
+	 */
 	public void detect() {
 		try {
 			System.out.println("Starting Device Discovery...");
@@ -93,6 +115,9 @@ public class BDTWindow extends JFrame implements ActionListener {
 		}
 	}
 	
+	/*
+	 * Function draws all pertinent graphical components.
+	 */
 	public void draw() {
 		hideButton = new JButton("Hide\r\n");
 		hideButton.setBackground(Color.WHITE);
@@ -134,18 +159,31 @@ public class BDTWindow extends JFrame implements ActionListener {
 		this.setVisible(true);
 	}
 	
+	/*
+	 * Function responsible for "swivel" animation in and out of desktop area.
+	 */
 	public void move() {
 		offscreen = this.getLocation().x >= screenWidth;
 		swivelTimer = new Timer(5, this);
 		swivelTimer.start();
 	}
 	
+	/*
+	 * Function responsible for 100ms clock. This will be used later for graphing and ping analysis.
+	 * Currently used to bring GUI back into desktop after being hidden for debugging purposes.
+	 */
 	public void clock() {
 		clock = new Timer(100, this);
 		clock.start();
 	}
 	
+	/*
+	 * EVENT HANDLER
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
+		
+		//If the GUI is offscreen, move it onto screen.
 		if(e.getSource() == swivelTimer && offscreen) {
 			if(this.getLocation().x > screenWidth - 400) {
 				this.setLocation(this.getLocation().x - 20, this.getLocation().y);
@@ -156,6 +194,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 				offscreen = !offscreen;
 				swivelTimer.stop();
 			}
+		//If the GUI is onscreen, move it off screen
 		} else if (e.getSource() == swivelTimer && !offscreen) {
 			if(this.getLocation().x < screenWidth) {
 				this.setLocation(this.getLocation().x + 20, this.getLocation().y);
@@ -178,6 +217,9 @@ public class BDTWindow extends JFrame implements ActionListener {
 			}
 		}
 	}
+	/*
+	 * Listener class designed to meet specifications of DiscoveryListener
+	 */
 	public class MyDiscoveryListener implements DiscoveryListener {
 
 		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass arg1) {
