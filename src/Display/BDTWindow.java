@@ -217,6 +217,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 			}
 		}
 	}
+	
 	/*
 	 * Listener class designed to meet specifications of DiscoveryListener
 	 */
