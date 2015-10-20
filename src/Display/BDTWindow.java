@@ -40,6 +40,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 	 * Fields and Variables
 	 */
 	private Dimension screenSize;
+	private AdvancedWindow pane;
 	private String os;
 	private int screenWidth, screenHeight;
 	private Timer swivelTimer;
@@ -74,6 +75,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 		detect();
 		move();
 		clock();
+		pane = new AdvancedWindow();
 	}
 	
 	/*
@@ -210,6 +212,9 @@ public class BDTWindow extends JFrame implements ActionListener {
 		if(e.getSource() == hideButton) {
 			move();
 		}		
+		if(e.getSource() == expandButton) {
+			pane.visible(true);
+		}
 		if(e.getSource() == clock) {
 			duration = duration + 1;
 			if(duration % 100 == 0) {
@@ -241,7 +246,24 @@ public class BDTWindow extends JFrame implements ActionListener {
 		}
 		public void serviceSearchCompleted(int arg0, int arg1) {}
 		public void servicesDiscovered(int arg0, ServiceRecord[] arg1) {}
+	}
+	
+	public class AdvancedWindow extends JFrame implements ActionListener {
+		public AdvancedWindow() {
+			this.draw();
+		}
 		
+		public void draw() {
+			this.setBounds((screenSize.width / 2) - (480), (screenSize.height) - (360), 960, 720);
+		}
+		
+		public void visible(boolean b) {
+			this.setVisible(b);
+		}
+		public void actionPerformed(ActionEvent arg0) {
+
+			
+		}
 	}
 }
 
