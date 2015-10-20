@@ -39,43 +39,49 @@ public class BDTWindow extends JFrame implements ActionListener {
 	/*
 	 * Fields and Variables
 	 */
-	private Dimension screenSize;
-	private AdvancedWindow pane;
-	private String os;
-	private int screenWidth, screenHeight;
-	private Timer swivelTimer;
-	private Timer clock;
-	private int duration;
-	private JButton hideButton;
-	private JPanel detailPanel;
-	private JButton expandButton;
-	private JPanel devicePanel;
-	private boolean offscreen;
-	private static Object lock;
+	protected Dimension screenSize;
+	protected AdvancedWindow pane;
+	protected String os;
+	protected int screenWidth, screenHeight;
+	protected Timer swivelTimer;
+	protected Timer clock;
+	protected int duration;
+	protected JButton hideButton;
+	protected JPanel detailPanel;
+	protected JButton expandButton;
+	protected JPanel devicePanel;
+	protected boolean offscreen;
+	protected static Object lock;
 	protected LocalDevice user;
 	protected DiscoveryAgent agent;
 	protected ArrayList<RemoteDevice> discoveredDevices;
 	protected RemoteDevice mainDevice;
-	private JLabel deviceLabel;
-	private JLabel AssignLabel;
+	protected JLabel deviceLabel;
+	protected JLabel AssignLabel;
 	
 	/*
 	 * Main function, starts new BDTWindow.
 	 */
 	public static void main(String[] args) {
-		new BDTWindow();
+		new BDTWindow(true);
 	}
 	
 	/*
 	 * BDTWindow constructor. Follows 5 steps before continuous automation.
 	 */
-	public BDTWindow() {
+	public BDTWindow(boolean type) {
 		SetSystemSettings();
-		draw();
-		detect();
-		move();
-		clock();
-		pane = new AdvancedWindow();
+		setup(type);
+	}
+	
+	public void setup(boolean type) {
+		if(type) {
+			draw();
+			detect();
+			move();
+			clock();
+			pane = new AdvancedWindow();
+		}
 	}
 	
 	/*
@@ -142,6 +148,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 		expandButton = new JButton("Expand");
 		expandButton.setBackground(Color.WHITE);
 		expandButton.setBounds(278, 11, 96, 36);
+		expandButton.addActionListener(this);
 		getContentPane().add(expandButton);
 		
 		devicePanel = new JPanel();
@@ -247,23 +254,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 		public void serviceSearchCompleted(int arg0, int arg1) {}
 		public void servicesDiscovered(int arg0, ServiceRecord[] arg1) {}
 	}
-	
-	public class AdvancedWindow extends JFrame implements ActionListener {
-		public AdvancedWindow() {
-			this.draw();
-		}
-		
-		public void draw() {
-			this.setBounds((screenSize.width / 2) - (480), (screenSize.height) - (360), 960, 720);
-		}
-		
-		public void visible(boolean b) {
-			this.setVisible(b);
-		}
-		public void actionPerformed(ActionEvent arg0) {
 
-			
-		}
-	}
 }
 
