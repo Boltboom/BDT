@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -58,6 +59,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 	protected RemoteDevice mainDevice;
 	protected JLabel deviceLabel;
 	protected JLabel AssignLabel;
+	protected boolean operational = true;
 	
 	/*
 	 * Main function, starts new BDTWindow.
@@ -77,11 +79,10 @@ public class BDTWindow extends JFrame implements ActionListener {
 	public void setup(boolean type) {
 		discoveredDevices = new ArrayList<RemoteDevice>();
 		if(type) {
+			pane = new AdvancedWindow();
 			draw();
 			detect();
-			move();
 			clock();
-			pane = new AdvancedWindow();
 			
 		}
 	}
@@ -102,6 +103,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 	public void detect() {
 		try {
 			System.out.println("Starting Device Discovery...");
+			devicePanel.setBackground(Color.ORANGE);
+			devicePanel.repaint();
 			lock = new Object();
 			user = LocalDevice.getLocalDevice();
 			agent = user.getDiscoveryAgent();
@@ -119,6 +122,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 			}
 			label+="</body></html>";
 			deviceLabel.setText(label);
+			devicePanel.setBackground(Color.GREEN);
+			devicePanel.repaint();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,7 +133,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 	 * Function draws all pertinent graphical components.
 	 */
 	public void draw() {
-		hideButton = new JButton("Hide\r\n");
+		hideButton = new JButton("Toggle\r\n");
 		hideButton.setBackground(Color.WHITE);
 		hideButton.setBounds(278, 234, 96, 36);
 		hideButton.addActionListener(this);
@@ -164,20 +169,12 @@ public class BDTWindow extends JFrame implements ActionListener {
 		getContentPane().add(AssignLabel);
 		
 		this.setTitle("Bluetooth Diagnostic Utility");
-		this.setBounds(screenWidth, screenHeight-320, 400, 320);
+		this.setBounds(screenWidth-400, screenHeight-320, 400, 320);
+		this.setAlwaysOnTop(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
-	
-	/*
-	 * Function responsible for "swivel" animation in and out of desktop area.
-	 */
-	public void move() {
-		offscreen = this.getLocation().x >= screenWidth;
-		swivelTimer = new Timer(5, this);
-		swivelTimer.start();
-	}
-	
+
 	/*
 	 * Function responsible for 100ms clock. This will be used later for graphing and ping analysis.
 	 * Currently used to bring GUI back into desktop after being hidden for debugging purposes.
@@ -192,44 +189,18 @@ public class BDTWindow extends JFrame implements ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		
-		//If the GUI is offscreen, move it onto screen.
-		if(e.getSource() == swivelTimer && offscreen) {
-			if(this.getLocation().x > screenWidth - 400) {
-				this.setLocation(this.getLocation().x - 20, this.getLocation().y);
-				this.setAlwaysOnTop(true);
-				this.toFront();
-				this.repaint();
-			} else {
-				offscreen = !offscreen;
-				swivelTimer.stop();
-			}
-		//If the GUI is onscreen, move it off screen
-		} else if (e.getSource() == swivelTimer && !offscreen) {
-			if(this.getLocation().x < screenWidth) {
-				this.setLocation(this.getLocation().x + 20, this.getLocation().y);
-				this.setAlwaysOnTop(true);
-				this.toFront();
-				this.repaint();
-			}
-			else {
-				offscreen = !offscreen;
-				swivelTimer.stop();
-			}
+		if(e.getSource() == expandButton) {
+			pane.setVisible(true);
 		}
 		if(e.getSource() == hideButton) {
-			move();
-		}		
-		if(e.getSource() == expandButton) {
-			pane.visible(true);
-		}
-		if(e.getSource() == clock) {
-			this.repaint();
-			duration = duration + 1;
-			if(duration % 100 == 0) {
-				if(offscreen) move();
-				detect();
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+			detect();
 		}
 	}
 	
