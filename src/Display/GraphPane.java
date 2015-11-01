@@ -17,14 +17,12 @@ public class GraphPane extends JPanel{
 		bounds = new double[2];
 		bounds[0] = this.getWidth();
 		bounds[1] = this.getHeight();
-		System.out.println(bounds[0] + " " + bounds[1]);
 	}
 	
 	public void init() {
 		bounds = new double[2];
 		bounds[0] = this.getWidth();
 		bounds[1] = this.getHeight();
-		System.out.println(bounds[0] + " " + bounds[1]);
 	}
 	protected void paintComponent(Graphics g) {
 		g.setColor(Color.WHITE);

@@ -75,12 +75,14 @@ public class BDTWindow extends JFrame implements ActionListener {
 	}
 	
 	public void setup(boolean type) {
+		discoveredDevices = new ArrayList<RemoteDevice>();
 		if(type) {
 			draw();
 			detect();
 			move();
 			clock();
 			pane = new AdvancedWindow();
+			
 		}
 	}
 	
@@ -104,7 +106,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 			user = LocalDevice.getLocalDevice();
 			agent = user.getDiscoveryAgent();
 			agent.startInquiry(DiscoveryAgent.GIAC, new MyDiscoveryListener());
-			discoveredDevices = new ArrayList<RemoteDevice>();
 			try {
 				synchronized(lock) {
 					lock.wait();
@@ -223,9 +224,11 @@ public class BDTWindow extends JFrame implements ActionListener {
 			pane.visible(true);
 		}
 		if(e.getSource() == clock) {
+			this.repaint();
 			duration = duration + 1;
 			if(duration % 100 == 0) {
 				if(offscreen) move();
+				detect();
 			}
 		}
 	}
@@ -242,7 +245,10 @@ public class BDTWindow extends JFrame implements ActionListener {
 			} catch (Exception e) {
 				name = btDevice.getBluetoothAddress();
 			}
-			discoveredDevices.add(btDevice);
+			if(!discoveredDevices.contains(btDevice)) {
+				discoveredDevices.add(btDevice);
+				System.out.println("Device Added: " + name);
+			}
 			System.out.println("Device found: " + name);
 		}
 
