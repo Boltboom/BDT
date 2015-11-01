@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -56,18 +57,20 @@ public class BDTWindow extends JFrame implements ActionListener {
 	protected LocalDevice user;
 	protected DiscoveryAgent agent;
 	protected ArrayList<RemoteDevice> discoveredDevices;
+	protected ArrayList<RemoteDevice> copydiscoveredDevices;
+	protected ArrayList<Long> connectiontimes;
 	protected RemoteDevice mainDevice;
 	protected JLabel deviceLabel;
 	protected JLabel AssignLabel;
 	protected boolean operational = true;
-	
+
 	/*
 	 * Main function, starts new BDTWindow.
 	 */
 	public static void main(String[] args) {
 		new BDTWindow(true);
 	}
-	
+
 	/*
 	 * BDTWindow constructor. Follows 5 steps before continuous automation.
 	 */
@@ -75,18 +78,20 @@ public class BDTWindow extends JFrame implements ActionListener {
 		SetSystemSettings();
 		setup(type);
 	}
-	
+
 	public void setup(boolean type) {
 		discoveredDevices = new ArrayList<RemoteDevice>();
+		connectiontimes= new ArrayList<Long>();
+
 		if(type) {
 			pane = new AdvancedWindow();
 			draw();
 			detect();
 			clock();
-			
+
 		}
 	}
-	
+
 	/*
 	 * Function finds all relevant system information for the utility. More information will be pinged later.
 	 */
@@ -96,7 +101,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 		screenWidth = screenSize.width;
 		screenHeight = screenSize.height;
 	}
-	
+
 	/*
 	 * Function detects all available bluetooth devices and adds them to the GUI.
 	 */
@@ -116,9 +121,18 @@ public class BDTWindow extends JFrame implements ActionListener {
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			} System.out.println("Device Inquiry Completed.");
+			deviceLabel.setText("");
 			String label = "<html><body>" + deviceLabel.getText();
+			int i=0;
+
 			for(RemoteDevice a : discoveredDevices) {
-				label += a.getFriendlyName(false) + " {" + a.getBluetoothAddress() + ") <br>";
+				Date temp=new Date();
+				System.out.println(a.getFriendlyName(false)+ " Display results time: " + temp);
+
+
+				double len=((double)(temp.getTime())-(double)(connectiontimes.get(i)))/1000;
+				label += a.getFriendlyName(false) + " {" + a.getBluetoothAddress() + ") Connection Length: "+len+" seconds <br>";
+				i++;
 			}
 			label+="</body></html>";
 			deviceLabel.setText(label);
@@ -128,7 +142,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/*
 	 * Function draws all pertinent graphical components.
 	 */
@@ -138,36 +152,36 @@ public class BDTWindow extends JFrame implements ActionListener {
 		hideButton.setBounds(278, 234, 96, 36);
 		hideButton.addActionListener(this);
 		getContentPane().add(hideButton);
-		
+
 		detailPanel = new JPanel();
 		detailPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		detailPanel.setBackground(Color.WHITE);
 		detailPanel.setBounds(10, 56, 364, 167);
 		getContentPane().add(detailPanel);
 		detailPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		deviceLabel = new JLabel("");
 		detailPanel.add(deviceLabel, BorderLayout.CENTER);
 		deviceLabel.setVerticalAlignment(SwingConstants.TOP);
 		deviceLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		
+
 		expandButton = new JButton("Expand");
 		expandButton.setBackground(Color.WHITE);
 		expandButton.setBounds(278, 11, 96, 36);
 		expandButton.addActionListener(this);
 		getContentPane().add(expandButton);
-		
+
 		devicePanel = new JPanel();
 		devicePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		devicePanel.setBackground(Color.WHITE);
 		devicePanel.setBounds(10, 234, 258, 36);
 		getContentPane().add(devicePanel);
-		
+
 		AssignLabel = new JLabel("Available Devices:");
 		AssignLabel.setFont(new Font("Monospaced", Font.PLAIN, 14));
 		AssignLabel.setBounds(10, 34, 258, 20);
 		getContentPane().add(AssignLabel);
-		
+
 		this.setTitle("Bluetooth Diagnostic Utility");
 		this.setBounds(screenWidth-400, screenHeight-320, 400, 320);
 		this.setAlwaysOnTop(true);
@@ -183,7 +197,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 		clock = new Timer(100, this);
 		clock.start();
 	}
-	
+
 	/*
 	 * EVENT HANDLER
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -198,30 +212,60 @@ public class BDTWindow extends JFrame implements ActionListener {
 					detect();
 				}
 			}).start();
-			
+
 		}
 	}
-	
+	public void removeunfound()
+	{
+		for(int i =0; i<copydiscoveredDevices.size();i++)
+		{
+			for(int j=0; j<discoveredDevices.size();j++)
+			{
+				if(discoveredDevices.get(j).equals(copydiscoveredDevices.get(i)))
+				{
+					break;
+				}
+
+			}
+		}
+	}
 	/*
 	 * Listener class designed to meet specifications of DiscoveryListener
 	 */
 	public class MyDiscoveryListener implements DiscoveryListener {
 
 		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass arg1) {
+			copydiscoveredDevices= new ArrayList<RemoteDevice>();
 			String name;
 			try {
 				name = btDevice.getFriendlyName(false);
 			} catch (Exception e) {
 				name = btDevice.getBluetoothAddress();
 			}
-			if(!discoveredDevices.contains(btDevice)) {
+
+			System.out.println("Device that was found: " +name);
+			if(!discoveredDevices.contains(btDevice))
+			{
 				discoveredDevices.add(btDevice);
-				System.out.println("Device Added: " + name);
+				Date d=new Date();
+
+				System.out.println("Device: "+name + " Time added: " + d);
+				connectiontimes.add(d.getTime());
+
 			}
-			System.out.println("Device found: " + name);
+
+			// Removing devices that have dissconnected.
+			//
+
+
+
+
+
+
 		}
 
 		public void inquiryCompleted(int arg0) {
+			removeunfound();
 			synchronized(lock) {
 				lock.notify();
 			}
@@ -231,4 +275,3 @@ public class BDTWindow extends JFrame implements ActionListener {
 	}
 
 }
-
