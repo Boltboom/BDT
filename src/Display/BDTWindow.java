@@ -193,14 +193,12 @@ public class BDTWindow extends JFrame implements ActionListener {
 			pane.setVisible(true);
 		}
 		if(e.getSource() == hideButton) {
+			new Thread(new Runnable() {
+				public void run() {
+					detect();
+				}
+			}).start();
 			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			detect();
 		}
 	}
 	
