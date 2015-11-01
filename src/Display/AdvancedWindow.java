@@ -12,11 +12,6 @@ import javax.swing.JTextPane;
 import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.border.BevelBorder;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.EtchedBorder;
 
 public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JTabbedPane tabs;
@@ -24,8 +19,6 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JPanel devicesTab;
 	private JPanel graphTab;
 	private JPanel errorTab;
-	private GraphPane graph;
-	private JPanel panel;
 	public AdvancedWindow() {
 		super(false);
 		this.setTitle("Advanced Utility Pane");
@@ -42,14 +35,6 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		graphTab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		graphTab.setBackground(new Color(240, 248, 255));
 		tabs.addTab("Graphical Data", null, graphTab, null);
-		graphTab.setLayout(null);
-		
-		graph = new GraphPane();
-		graph.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		graph.setBounds(2, 79, 915, 506);
-		graph.init();
-		graphTab.add(graph);
-		
 		
 		errorTab = new JPanel();
 		errorTab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
