@@ -2,6 +2,7 @@ package Display;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,7 +26,8 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JPanel graphTab;
 	private JPanel errorTab;
 	private GraphPane graph;
-	private JPanel panel;
+	private ArrayList<DataRelation> pertInfo;
+	
 	public AdvancedWindow() {
 		super(false);
 		this.setTitle("Advanced Utility Pane");
@@ -62,6 +64,11 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		contractButton.addActionListener(this);
 		getContentPane().add(contractButton);
 		this.draw();
+		this.readInfo();
+	}
+	
+	public void readInfo() {
+		
 	}
 	
 	public void draw() {
