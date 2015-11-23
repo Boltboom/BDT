@@ -42,6 +42,7 @@ public class GraphPane extends JPanel{
 		bounds[1] = this.getHeight();
 	}
 	protected void paintComponent(Graphics g) {
+		if(data != null) {
 		//Draw Base
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) bounds[0], (int) bounds[1]);
@@ -61,6 +62,7 @@ public class GraphPane extends JPanel{
 		}
 		for(int j = 0; j < data.size(); j++) {
 			g.fillRect((int)(bounds[0] / limits[0] * data.get(j).x), (int)(bounds[1] - (bounds[1] / limits[1] * data.get(j).y)), 3, 3);
+		}
 		}
 	}
 }
