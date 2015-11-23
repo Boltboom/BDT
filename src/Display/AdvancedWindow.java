@@ -18,6 +18,8 @@ import java.awt.FlowLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JTabbedPane tabs;
@@ -27,6 +29,7 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JPanel errorTab;
 	private GraphPane graph;
 	private ArrayList<DataRelation> pertInfo;
+	private JTable table;
 	
 	public AdvancedWindow() {
 		super(false);
@@ -39,6 +42,29 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		devicesTab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		devicesTab.setBackground(new Color(245, 255, 250));
 		tabs.addTab("Devices", null, devicesTab, null);
+		devicesTab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+			},
+			new String[] {
+				"Device Name", "Bluetooth Address", "Discoverable", "Interval"
+			}
+		));
+		table.setBackground(new Color(255, 255, 255));
+		devicesTab.add(table);
 		
 		graphTab = new JPanel();
 		graphTab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
