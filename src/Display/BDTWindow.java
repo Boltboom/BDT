@@ -63,6 +63,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 	protected JLabel deviceLabel;
 	protected JLabel AssignLabel;
 	protected boolean operational = true;
+	
+	protected ArrayList<DataRelation> DataDevices;
 
 	/*
 	 * Main function, starts new BDTWindow.
@@ -82,6 +84,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 	public void setup(boolean type) {
 		discoveredDevices = new ArrayList<RemoteDevice>();
 		connectiontimes= new ArrayList<Long>();
+		DataDevices= new ArrayList<DataRelation>();
+		copydiscoveredDevices= new ArrayList<RemoteDevice>();
 
 		if(type) {
 			pane = new AdvancedWindow();
@@ -113,6 +117,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 			lock = new Object();
 			user = LocalDevice.getLocalDevice();
 			agent = user.getDiscoveryAgent();
+			copydiscoveredDevices.clear();
 			agent.startInquiry(DiscoveryAgent.GIAC, new MyDiscoveryListener());
 			try {
 				synchronized(lock) {
@@ -124,13 +129,13 @@ public class BDTWindow extends JFrame implements ActionListener {
 			deviceLabel.setText("");
 			String label = "<html><body>" + deviceLabel.getText();
 			int i=0;
-
+			removeunfound();
 			for(RemoteDevice a : discoveredDevices) {
 				Date temp=new Date();
 				System.out.println(a.getFriendlyName(false)+ " Display results time: " + temp);
 
 
-				double len=((double)(temp.getTime())-(double)(connectiontimes.get(i)))/1000;
+				double len=((double)(temp.getTime())-(double)(DataDevices.get(i).startconnection))/1000;
 				label += a.getFriendlyName(false) + " {" + a.getBluetoothAddress() + ") Connection Length: "+len+" seconds <br>";
 				i++;
 			}
@@ -215,17 +220,47 @@ public class BDTWindow extends JFrame implements ActionListener {
 
 		}
 	}
+	// This device stops all current timers in our Data Relation, because none of the devices are found anymore.
+	public void stopallTimes()
+	{
+		for(int i=0; i<DataDevices.size();i++)
+		{
+			if(	DataDevices.get(i).discoverable)
+			{
+				Date temp= new Date();
+				DataDevices.get(i).discoverable=false;
+				// Stops the timer for the discovered devices bc they are no longer discoverable.
+				DataDevices.get(i).startconnection=((double)(temp.getTime())-(double)(DataDevices.get(i).startconnection))/1000;
+			}
+
+		}
+	}
+	// Checks if devices in discovered devices are still found.
 	public void removeunfound()
 	{
-		for(int i =0; i<copydiscoveredDevices.size();i++)
+		System.out.println("GOTHERE");
+		System.out.println("The size of the copy is :"+ copydiscoveredDevices.size());
+		if(copydiscoveredDevices.isEmpty())
 		{
-			for(int j=0; j<discoveredDevices.size();j++)
-			{
-				if(discoveredDevices.get(j).equals(copydiscoveredDevices.get(i)))
-				{
-					break;
-				}
+			discoveredDevices.clear();
 
+			
+			stopallTimes();
+			//Clear connection times
+			connectiontimes.clear();
+		}
+			
+		else
+		{
+			for(int i =0; i<discoveredDevices.size();i++)
+			{
+				if(!copydiscoveredDevices.contains(discoveredDevices.get(i)))
+				{
+					discoveredDevices.remove(i);
+					connectiontimes.remove(i);
+					System.out.println("REMOVED");
+					
+				}
 			}
 		}
 	}
@@ -235,37 +270,42 @@ public class BDTWindow extends JFrame implements ActionListener {
 	public class MyDiscoveryListener implements DiscoveryListener {
 
 		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass arg1) {
-			copydiscoveredDevices= new ArrayList<RemoteDevice>();
+			copydiscoveredDevices.add(btDevice);
+			System.out.println(copydiscoveredDevices.size());
 			String name;
-			try {
+			try
+			{
 				name = btDevice.getFriendlyName(false);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				name = btDevice.getBluetoothAddress();
 			}
-
+			// Adding all discovered devices to a copy.
+		
 			System.out.println("Device that was found: " +name);
 			if(!discoveredDevices.contains(btDevice))
 			{
-				discoveredDevices.add(btDevice);
+				DataRelation Data = new DataRelation();
 				Date d=new Date();
-
+				
+				Data.name= name;
+				Data.id=btDevice.getBluetoothAddress();
+				Data.discoverable=true;
+				Data.startconnection=d.getTime();
+							
+				discoveredDevices.add(btDevice);
+				
+				// add data-relation object to ArrayList
+				DataDevices.add(Data);						
 				System.out.println("Device: "+name + " Time added: " + d);
 				connectiontimes.add(d.getTime());
 
 			}
 
-			// Removing devices that have dissconnected.
-			//
-
-
-
-
-
-
 		}
 
 		public void inquiryCompleted(int arg0) {
-			removeunfound();
 			synchronized(lock) {
 				lock.notify();
 			}
