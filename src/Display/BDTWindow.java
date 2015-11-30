@@ -226,7 +226,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 	/*
 	 * Writer
 	 */
-	
 	public void writeDataDeviceLog() {
 		ArrayList<String> str = new ArrayList<String>();
 		for(int i = 0; i < DataDevices.size(); i++) {
@@ -301,14 +300,14 @@ public class BDTWindow extends JFrame implements ActionListener {
 		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass arg1) {
 			copydiscoveredDevices.add(btDevice);
 			System.out.println(copydiscoveredDevices.size());
-			String name; /*
+			String name; 
 			try {
 				int x= RemoteDeviceHelper.readRSSI(btDevice);
 				System.out.println("Connection Strength: "+x);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} */
+			} 
 			try
 			{
 				name = btDevice.getFriendlyName(false);
