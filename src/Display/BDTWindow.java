@@ -16,9 +16,6 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
-
-import com.intel.bluetooth.RemoteDeviceHelper;
-
 import javax.swing.JList;
 
 import java.awt.Color;
@@ -89,7 +86,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 		connectiontimes= new ArrayList<Long>();
 		DataDevices= new ArrayList<DataRelation>();
 		copydiscoveredDevices= new ArrayList<RemoteDevice>();
-		
+
 		if(type) {
 			pane = new AdvancedWindow();
 			draw();
@@ -276,13 +273,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 			copydiscoveredDevices.add(btDevice);
 			System.out.println(copydiscoveredDevices.size());
 			String name;
-			try {
-				int x= RemoteDeviceHelper.readRSSI(btDevice);
-				System.out.println("Connection Strength: "+x);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			try
 			{
 				name = btDevice.getFriendlyName(false);
