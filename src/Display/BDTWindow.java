@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-
+import com.intel.bluetooth.RemoteDeviceHelper;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 import javax.swing.JButton;
@@ -16,8 +16,6 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
-
-import com.intel.bluetooth.RemoteDeviceHelper;
 
 import javax.swing.JList;
 
@@ -91,7 +89,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 		copydiscoveredDevices= new ArrayList<RemoteDevice>();
 		
 		if(type) {
-			pane = new AdvancedWindow();
 			draw();
 			detect();
 			clock();
@@ -212,6 +209,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == expandButton) {
+			writeDataDeviceLog();
+			pane = new AdvancedWindow();
 			pane.setVisible(true);
 		}
 		if(e.getSource() == hideButton) {
@@ -221,6 +220,33 @@ public class BDTWindow extends JFrame implements ActionListener {
 				}
 			}).start();
 
+		}
+	}
+	
+	/*
+	 * Writer
+	 */
+	
+	public void writeDataDeviceLog() {
+		ArrayList<String> str = new ArrayList<String>();
+		for(int i = 0; i < DataDevices.size(); i++) {
+			Date d = new Date();
+			double temp =((double)(d.getTime())-(double)(DataDevices.get(i).startconnection))/1000;
+			if(DataDevices.get(i).discoverable == true) {
+				str.add(DataDevices.get(i).id + ", " + DataDevices.get(i).name + ", " + DataDevices.get(i).sigstr + ", " + DataDevices.get(i).discoverable + ", " + temp + ",");
+			} else {
+				str.add(DataDevices.get(i).id + ", " + DataDevices.get(i).name + ", " + DataDevices.get(i).sigstr + ", " + DataDevices.get(i).discoverable + ", " + DataDevices.get(i).startconnection + ",");
+			}
+		}
+		String[] arr = new String[str.size()];
+		for(int j = 0; j < str.size(); j++) {
+			arr[j] = str.get(j);
+		}
+		try {
+			Writer.write(arr, "history");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	// This device stops all current timers in our Data Relation, because none of the devices are found anymore.
@@ -275,14 +301,14 @@ public class BDTWindow extends JFrame implements ActionListener {
 		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass arg1) {
 			copydiscoveredDevices.add(btDevice);
 			System.out.println(copydiscoveredDevices.size());
-			String name;
+			String name; /*
 			try {
 				int x= RemoteDeviceHelper.readRSSI(btDevice);
 				System.out.println("Connection Strength: "+x);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			} */
 			try
 			{
 				name = btDevice.getFriendlyName(false);

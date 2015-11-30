@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Writer {
 	public static void write(String[] newText, String doc) throws IOException {
-		File newDoc = new File("files/" + doc + ".txt");
+		File newDoc = new File("bin/" + doc + ".txt");
 		if(!newDoc.exists()) {
 			newDoc.createNewFile();
 		}
