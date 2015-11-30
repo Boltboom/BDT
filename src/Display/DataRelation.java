@@ -5,5 +5,4 @@ public class DataRelation {
 	public String name;
 	public boolean discoverable;
 	public double sigstr;
-	public double startconnection;
 }
