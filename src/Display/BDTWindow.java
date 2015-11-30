@@ -63,6 +63,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 	protected RemoteDevice mainDevice;
 	protected JLabel deviceLabel;
 	protected JLabel AssignLabel;
+	protected ArrayList<String> RSSI_DEVICE; //Holds name of current RSSI device
+	protected ArrayList<ArrayList<Double>> RSSI_VAL; //Holds name of current values
 	protected boolean operational = true;
 	
 	protected ArrayList<DataRelation> DataDevices;
@@ -104,6 +106,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		screenWidth = screenSize.width;
 		screenHeight = screenSize.height;
+		RSSI_DEVICE = new ArrayList<String>();
+		RSSI_VAL = new ArrayList<ArrayList<Double>>();
 	}
 
 	/*
@@ -210,6 +214,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == expandButton) {
 			writeDataDeviceLog();
+			writeRSSILog();
 			pane = new AdvancedWindow();
 			pane.setVisible(true);
 		}
@@ -226,6 +231,23 @@ public class BDTWindow extends JFrame implements ActionListener {
 	/*
 	 * Writer
 	 */
+	public void writeRSSILog() { if(RSSI_DEVICE.size() != 0 && RSSI_VAL.size() != 0) {
+		for(int i = 0; i < RSSI_DEVICE.size(); i++) {
+			String[] arr = new String[2];
+			arr[0] = RSSI_DEVICE.get(i);
+			String temp_vals = "";
+			for(int j = 0; j < RSSI_VAL.get(i).size(); j++) {
+				temp_vals = RSSI_VAL.get(i).get(j) + ", ";
+			}
+			arr[1] = temp_vals;
+			try {
+				Writer.write(arr, "device_" + i);
+			} catch (IOException e) {
+				System.out.println("Failed to write to device_" + i);
+			}
+		}
+	}}
+	
 	public void writeDataDeviceLog() {
 		ArrayList<String> str = new ArrayList<String>();
 		for(int i = 0; i < DataDevices.size(); i++) {
@@ -292,6 +314,20 @@ public class BDTWindow extends JFrame implements ActionListener {
 			}
 		}
 	}
+	
+	public void addRSSI(double x, String name) {
+		boolean added = false;
+		for(int i = 0; i < RSSI_DEVICE.size(); i++) {
+			if(name.equals(RSSI_DEVICE.get(i))) {
+				RSSI_VAL.get(i).add(x);
+			}
+		} if(!added) {
+			RSSI_DEVICE.add(name);
+			ArrayList<Double> temp = new ArrayList<Double>();
+			temp.add(x);
+			RSSI_VAL.add(temp);
+		}
+	}
 	/*
 	 * Listener class designed to meet specifications of DiscoveryListener
 	 */
@@ -301,13 +337,14 @@ public class BDTWindow extends JFrame implements ActionListener {
 			copydiscoveredDevices.add(btDevice);
 			System.out.println(copydiscoveredDevices.size());
 			String name; 
-			try {
-				int x= RemoteDeviceHelper.readRSSI(btDevice);
-				System.out.println("Connection Strength: "+x);
+			double t = (Math.random() + 1) * 20;
+			try { 
+				t = RemoteDeviceHelper.readRSSI(btDevice);
+				System.out.println("Connection Strength: "+t);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} 
+			}
 			try
 			{
 				name = btDevice.getFriendlyName(false);
@@ -315,9 +352,8 @@ public class BDTWindow extends JFrame implements ActionListener {
 			catch (Exception e) 
 			{
 				name = btDevice.getBluetoothAddress();
-			}
+			} 
 			// Adding all discovered devices to a copy.
-		
 			System.out.println("Device that was found: " +name);
 			if(!discoveredDevices.contains(btDevice))
 			{
@@ -337,6 +373,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 				connectiontimes.add(d.getTime());
 
 			}
+			addRSSI(t, name);
 
 		}
 
