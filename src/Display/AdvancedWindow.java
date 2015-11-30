@@ -127,7 +127,7 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 			String id = current.get(0);
 			String name = current.get(1);
 			double sigstr = Double.parseDouble(current.get(2));
-			boolean discoverable = current.get(3).equals("True");
+			boolean discoverable = current.get(3).equals(" true");
 			double startconnection = Double.parseDouble(current.get(4));
 			
 			DataRelation temp = new DataRelation();
