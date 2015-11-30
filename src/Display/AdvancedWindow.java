@@ -20,9 +20,6 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.ListSelectionModel;
-import java.awt.Font;
-import javax.swing.BoxLayout;
 
 public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JTabbedPane tabs;
@@ -31,7 +28,7 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 	private JPanel graphTab;
 	private JPanel errorTab;
 	private GraphPane graph;
-	public ArrayList<DataRelation> pertInfo;
+	private ArrayList<DataRelation> pertInfo;
 	private JTable table;
 	
 	public AdvancedWindow() {
@@ -41,37 +38,31 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		tabs.setBounds(10, 55, 924, 615);
 		getContentPane().add(tabs);
 		
-		System.out.println("Starting Read Procedure: ");
-		readInfo();
-		System.out.println("Ending the Read Procedure. " + pertInfo.size());
-		
-		Object[][] art = new Object[pertInfo.size()][4];
-		for(int i = 0; i < pertInfo.size(); i++) {
-			art[i][1] = pertInfo.get(i).id;
-			art[i][0] = pertInfo.get(i).name;
-			art[i][2] = pertInfo.get(i).discoverable;
-			art[i][3] = pertInfo.get(i).startconnection;
-			System.out.println("Table Setting...");
-		}
-		
 		devicesTab = new JPanel();
 		devicesTab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		devicesTab.setBackground(new Color(245, 255, 250));
 		tabs.addTab("Devices", null, devicesTab, null);
+		devicesTab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		table = new JTable();
-		table.setFont(new Font("Courier New", Font.PLAIN, 18));
-		table.setRowSelectionAllowed(false);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setModel(new DefaultTableModel(art,
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+			},
 			new String[] {
 				"Device Name", "Bluetooth Address", "Discoverable", "Interval"
 			}
 		));
-		table.getColumnModel().getColumn(0).setPreferredWidth(247);
-		table.getColumnModel().getColumn(1).setPreferredWidth(153);
-		table.getColumnModel().getColumn(3).setPreferredWidth(126);
-		devicesTab.setLayout(new BoxLayout(devicesTab, BoxLayout.X_AXIS));
 		table.setBackground(new Color(255, 255, 255));
 		devicesTab.add(table);
 		
@@ -99,45 +90,11 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		contractButton.addActionListener(this);
 		getContentPane().add(contractButton);
 		this.draw();
+		this.readInfo();
 	}
 	
 	public void readInfo() {
-		System.out.println("Reading...");
-		String[] raw = Reader.readAllLines("bin/history.txt");
-		ArrayList<ArrayList<String>> str = new ArrayList<ArrayList<String>>();
-		for(int i = 0; i < raw.length; i++) {
-			str.add(i, new ArrayList<String>());
-			int last = 0;
-			for(int j = 0; j < raw[i].length(); j++) {
-				if(raw[i].charAt(j) == ',')
-				{
-					str.get(i).add(raw[i].substring(last, j));
-					last = j + 1;
-				}
-			}
-		}
-		/*
-		 * Parse to data relations
-		 */
-		System.out.println("Parsing...");
-		this.pertInfo = new ArrayList<DataRelation>();
-		for(int x = 0; x < str.size(); x++) {
-			System.out.println("Cycle " + x);
-			ArrayList<String> current = str.get(x);
-			String id = current.get(0);
-			String name = current.get(1);
-			double sigstr = Double.parseDouble(current.get(2));
-			boolean discoverable = current.get(3).equals("True");
-			double startconnection = Double.parseDouble(current.get(4));
-			
-			DataRelation temp = new DataRelation();
-			temp.id = id;
-			temp.name = name;
-			temp.sigstr = sigstr;
-			temp.discoverable = discoverable;
-			temp.startconnection = startconnection;
-			pertInfo.add(temp);
-		}
+		
 	}
 	
 	public void draw() {
