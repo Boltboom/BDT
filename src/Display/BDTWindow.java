@@ -224,7 +224,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 					detect();
 				}
 			}).start();
-
 		}
 	}
 	
@@ -237,7 +236,7 @@ public class BDTWindow extends JFrame implements ActionListener {
 			arr[0] = RSSI_DEVICE.get(i);
 			String temp_vals = "";
 			for(int j = 0; j < RSSI_VAL.get(i).size(); j++) {
-				temp_vals = RSSI_VAL.get(i).get(j) + ", ";
+				temp_vals += RSSI_VAL.get(i).get(j) + ", ";
 			}
 			arr[1] = temp_vals;
 			try {
@@ -288,8 +287,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 	// Checks if devices in discovered devices are still found.
 	public void removeunfound()
 	{
-		System.out.println("GOTHERE");
-		System.out.println("The size of the copy is :"+ copydiscoveredDevices.size());
 		if(copydiscoveredDevices.isEmpty())
 		{
 			discoveredDevices.clear();
@@ -308,7 +305,6 @@ public class BDTWindow extends JFrame implements ActionListener {
 				{
 					discoveredDevices.remove(i);
 					connectiontimes.remove(i);
-					System.out.println("REMOVED");
 					
 				}
 			}
@@ -320,9 +316,12 @@ public class BDTWindow extends JFrame implements ActionListener {
 		for(int i = 0; i < RSSI_DEVICE.size(); i++) {
 			if(name.equals(RSSI_DEVICE.get(i))) {
 				RSSI_VAL.get(i).add(x);
+				added=true;
+				System.out.println("Added another point to: " + RSSI_DEVICE.get(i));
 			}
 		} if(!added) {
 			RSSI_DEVICE.add(name);
+			System.out.println("Added a unique device under the name: " + name);
 			ArrayList<Double> temp = new ArrayList<Double>();
 			temp.add(x);
 			RSSI_VAL.add(temp);

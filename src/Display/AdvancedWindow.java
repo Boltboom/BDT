@@ -43,6 +43,7 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		
 		System.out.println("Starting Read Procedure: ");
 		readInfo();
+		
 		System.out.println("Ending the Read Procedure. " + pertInfo.size());
 		
 		Object[][] art = new Object[pertInfo.size()][4];
@@ -82,6 +83,7 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		graphTab.setLayout(null);
 		
 		graph = new GraphPane();
+		readData();
 		graph.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		graph.setBounds(2, 79, 915, 506);
 		graph.init();
@@ -140,6 +142,31 @@ public class AdvancedWindow extends BDTWindow implements ActionListener {
 		}
 	}
 	
+	public void readData() {
+		String[] raw = Reader.readAllLines("bin/device_0.txt");
+		int last = 0;
+		/*
+		 * Reading
+		 */
+		ArrayList<String> str = new ArrayList<String>();
+		for(int j = 0; j < raw[1].length(); j++) {
+			if(raw[1].charAt(j) == ',')
+			{
+				str.add(raw[1].substring(last, j));
+				last = j + 1;
+			}
+		}
+		/*
+		 * Parsing
+		 */
+		ArrayList<Point> temp_data = new ArrayList<Point>();
+		for(int i = 0; i < str.size(); i++) {
+			double y = Double.parseDouble(str.get(i));
+			double x = i;
+			temp_data.add(new Point(x,y));
+		}
+		graph.setData(temp_data);
+	}
 	public void draw() {
 		this.setBounds((screenSize.width / 2) - (480), (screenSize.height/2) - 360, 960, 720);
 	}
