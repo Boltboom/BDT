@@ -303,8 +303,20 @@ public class BDTWindow extends JFrame implements ActionListener {
 			{
 				if(!copydiscoveredDevices.contains(discoveredDevices.get(i)))
 				{
+					String temp=discoveredDevices.get(i).getBluetoothAddress();
 					discoveredDevices.remove(i);
 					connectiontimes.remove(i);
+					for(int k=0; k<DataDevices.size();k++)
+					{
+						if(DataDevices.get(k).id.equalsIgnoreCase(temp))
+						{
+							DataDevices.get(k).discoverable=false;
+							Date tempDate=new Date();
+							DataDevices.get(k).startconnection=((double)(tempDate.getTime())-(double)(DataDevices.get(k).startconnection))/1000;
+							break;
+
+						}
+					}
 					
 				}
 			}
