@@ -37,7 +37,7 @@ import java.awt.Font;
  * @author Robert
  *
  */
-public class BDTWindow extends JFrame implements ActionListener {
+public class BDTWindow extends JFrame implements ActionListener, Runnable {
 
 	/*
 	 * Fields and Variables
@@ -395,6 +395,10 @@ public class BDTWindow extends JFrame implements ActionListener {
 		}
 		public void serviceSearchCompleted(int arg0, int arg1) {}
 		public void servicesDiscovered(int arg0, ServiceRecord[] arg1) {}
+	}
+	public void run() {
+		// TODO Auto-generated method stub
+		new BDTWindow(true);
 	}
 
 }
